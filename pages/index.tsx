@@ -9,7 +9,8 @@ export default function RutDocChat() {
   ]);
   const [input, setInput] = useState('');
 
-console.log('sending to backend...');
+const handleSend = async (): Promise<void> => {
+  console.log('sending to backend...');
 
   if (!input.trim()) return;
 
@@ -17,26 +18,28 @@ console.log('sending to backend...');
   const updatedMessages = [...messages, userMessage];
   setMessages(updatedMessages);
   setInput('');
-try {
-  const res = await fetch('/api/rutdoc', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ messages: updatedMessages }),
-  });
 
-  if (!res.ok) {
-    console.error('API error:', res.statusText);
-    return;
+  try {
+    const res = await fetch('/api/rutdoc', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ messages: updatedMessages }),
+    });
+
+    if (!res.ok) {
+      console.error('API error:', res.statusText);
+      return;
+    }
+
+    console.log('response status:', res.status);
+    const data = await res.json();
+    setMessages([...updatedMessages, { role: 'assistant', content: data.reply }]);
+  } catch (err) {
+    console.error('Request failed:', err);
   }
-
-  console.log('response status:', res.status);
-  const data = await res.json();
-  setMessages([...updatedMessages, { role: 'assistant', content: data.reply }]);
-} catch (err) {
-  console.error('Request failed:', err);
-}
+};
 
   return (
     <>
