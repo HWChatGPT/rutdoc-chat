@@ -19,27 +19,27 @@ console.log('sending to backend...');
   setInput('');
 
   try {
-    const res = await fetch('/api/rutdoc', {
-      console.log('response status:', res.status);
+  const res = await fetch('/api/rutdoc', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ messages: updatedMessages }),
+  });
 
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ messages: updatedMessages }),
-    });
+  console.log('response status:', res.status); // ✅ Now valid after fetch
 
-    if (!res.ok) {
-      console.error('API error:', res.statusText);
-      return;
-    }
-
-    const data = await res.json();
-    setMessages([...updatedMessages, { role: 'assistant', content: data.reply }]);
-  } catch (err) {
-    console.error('Request failed:', err);
+  if (!res.ok) {
+    console.error('API error:', res.statusText);
+    return;
   }
-};
+
+  const data = await res.json();
+  setMessages([...updatedMessages, { role: 'assistant', content: data.reply }]);
+} catch (err) {
+  console.error('Request failed:', err);
+}
+
 
 
   return (
