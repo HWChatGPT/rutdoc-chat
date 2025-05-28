@@ -12,6 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const { messages } = req.body;
+console.log('RutDoc API called with:', JSON.stringify(req.body, null, 2));
 
   try {
     const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
