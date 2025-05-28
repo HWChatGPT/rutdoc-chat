@@ -16,12 +16,18 @@ export default function RutDocChat() {
     setMessages(updatedMessages);
     setInput('');
 
-    const res = await fetch('/api/rutdoc', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: updatedMessages })
-    });
-    const data = await res.json();
+const res = await fetch('/api/rutdoc', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ messages: updatedMessages })
+});
+
+if (!res.ok) {
+  throw new Error(`API request failed with status ${res.status}`);
+}
+
+const data = await res.json();
+
     setMessages([...updatedMessages, { role: 'assistant', content: data.reply }]);
   };
 
