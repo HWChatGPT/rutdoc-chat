@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone', // Optional for Vercel optimization
+  output: 'standalone',
   experimental: {
     appDir: false,
   },
