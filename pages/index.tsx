@@ -9,7 +9,8 @@ export default function RutDocChat() {
   ]);
   const [input, setInput] = useState('');
 
-const handleSend = async () => {
+console.log('sending to backend...');
+
   if (!input.trim()) return;
 
   const userMessage = { role: 'user', content: input };
@@ -19,6 +20,8 @@ const handleSend = async () => {
 
   try {
     const res = await fetch('/api/rutdoc', {
+      console.log('response status:', res.status);
+
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
