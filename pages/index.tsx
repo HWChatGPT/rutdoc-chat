@@ -27,7 +27,7 @@ console.log('sending to backend...');
     body: JSON.stringify({ messages: updatedMessages }),
   });
 
-  console.log('response status:', res.status); // ✅ Now valid after fetch
+  console.log('response status:', res.status);
 
   if (!res.ok) {
     console.error('API error:', res.statusText);
@@ -39,6 +39,7 @@ console.log('sending to backend...');
 } catch (err) {
   console.error('Request failed:', err);
 }
+
 
 
 
