@@ -21,6 +21,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   const json = await openaiRes.json();
+  console.log('OpenAI API response:', JSON.stringify(json));
+  
   const reply = json.choices?.[0]?.message?.content || '[No reply]';
   res.status(200).json({ reply });
 };
