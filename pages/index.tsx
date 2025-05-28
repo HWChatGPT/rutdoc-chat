@@ -17,8 +17,7 @@ console.log('sending to backend...');
   const updatedMessages = [...messages, userMessage];
   setMessages(updatedMessages);
   setInput('');
-
-  try {
+try {
   const res = await fetch('/api/rutdoc', {
     method: 'POST',
     headers: {
@@ -27,21 +26,17 @@ console.log('sending to backend...');
     body: JSON.stringify({ messages: updatedMessages }),
   });
 
-  console.log('response status:', res.status);
-
   if (!res.ok) {
     console.error('API error:', res.statusText);
     return;
   }
 
+  console.log('response status:', res.status);
   const data = await res.json();
   setMessages([...updatedMessages, { role: 'assistant', content: data.reply }]);
 } catch (err) {
   console.error('Request failed:', err);
 }
-
-
-
 
   return (
     <>
