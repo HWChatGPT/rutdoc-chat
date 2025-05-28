@@ -9,30 +9,35 @@ export default function RutDocChat() {
   ]);
   const [input, setInput] = useState('');
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
-    const userMessage = { role: 'user', content: input };
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
-    setInput('');
+const handleSend = async () => {
+  if (!input.trim()) return;
 
-const res = await fetch('/api/rutdoc', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({ messages: updatedMessages }),
-});
+  const userMessage = { role: 'user', content: input };
+  const updatedMessages = [...messages, userMessage];
+  setMessages(updatedMessages);
+  setInput('');
 
+  try {
+    const res = await fetch('/api/rutdoc', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ messages: updatedMessages }),
+    });
 
-if (!res.ok) {
-  throw new Error(`API request failed with status ${res.status}`);
-}
+    if (!res.ok) {
+      console.error('API error:', res.statusText);
+      return;
+    }
 
-const data = await res.json();
-
+    const data = await res.json();
     setMessages([...updatedMessages, { role: 'assistant', content: data.reply }]);
-  };
+  } catch (err) {
+    console.error('Request failed:', err);
+  }
+};
+
 
   return (
     <>
