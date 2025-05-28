@@ -35,7 +35,8 @@ const handleSend = async (): Promise<void> => {
 
     console.log('response status:', res.status);
     const data = await res.json();
-    setMessages([...updatedMessages, { role: 'assistant', content: data.reply }]);
+    console.log('API returned:', data);
+    setMessages([...updatedMessages, { role: 'assistant', content: data.reply || 'No reply received.' }]);
   } catch (err) {
     console.error('Request failed:', err);
   }
