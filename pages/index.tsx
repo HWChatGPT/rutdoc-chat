@@ -16,7 +16,7 @@ export default function RutDocChat() {
     setMessages(updatedMessages);
     setInput('');
 
-const res = await fetch('/api/rutdoc', {
+const res = await fetch('https://rutdoc-chat.vercel.app/', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ messages: updatedMessages })
