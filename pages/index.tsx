@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 export default function RutDocChat() {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true); // Force chat to be open by default
   const [messages, setMessages] = useState([
     { role: 'assistant', content: 'I\'m RutDoc™ — ask me anything about scent, wind, or scrape setup.' }
   ]);
