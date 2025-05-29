@@ -66,12 +66,12 @@ const handleSend = async (): Promise<void> => {
           </div>
           <div className="flex border-t p-2">
             <input
-              className="flex-1 border rounded-md px-2 py-1 text-black"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSend()}
-              placeholder="Ask RutDoc anything..."
-            />
+  className="rutdoc-input flex-1 border rounded-md px-2 py-1 text-black"
+  value={input}
+  onChange={(e) => setInput(e.target.value)}
+  onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+  placeholder="Ask RutDoc anything..."
+/>
             <button onClick={handleSend} className="ml-2 bg-black text-white px-4 py-1 rounded-md">
               Send
             </button>
