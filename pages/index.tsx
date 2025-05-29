@@ -10,7 +10,7 @@ export default function RutDocChat() {
   const [input, setInput] = useState('');
 
 const handleSend = async (): Promise<void> => {
-  console.log('HANDLE_SEND_TRIGGERED with input:', input);
+  console.log('💬 handleSend triggered');
   console.log('sending to backend...');
 
   if (!input.trim()) return;
