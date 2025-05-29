@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 export default function RutDocChat() {
-  const [visible, setVisible] = useState(true); // Force chat to be open by default
+  const [visible, setVisible] = useState(false); // back to original toggle state
   const [messages, setMessages] = useState([
     { role: 'assistant', content: 'I\'m RutDoc™ — ask me anything about scent, wind, or scrape setup.' }
   ]);
@@ -37,6 +37,7 @@ const handleSend = async (): Promise<void> => {
     console.log('response status:', res.status);
     const data = await res.json();
     console.log('API returned:', data);
+    alert('Assistant says: ' + data.reply);
     setMessages([...updatedMessages, { role: 'assistant', content: data.reply || 'No reply received.' }]);
   } catch (err) {
     console.error('Request failed:', err);
