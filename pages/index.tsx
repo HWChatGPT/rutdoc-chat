@@ -57,7 +57,7 @@ export default function RutDocChat() {
 
       {visible && (
         <div className="fixed bottom-20 right-4 w-full max-w-md h-[500px] bg-white rounded-xl shadow-xl flex flex-col z-50 border border-gray-300">
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 text-sm">
+          <div className="flex-1 grow overflow-y-auto p-4 space-y-3 text-sm">
             {messages.map((msg, i) => (
               <div
                 key={i}
@@ -75,7 +75,7 @@ export default function RutDocChat() {
 
           <div className="flex border-t border-gray-200 p-2">
             <input
-              className="flex-1 border rounded-md px-3 py-2 text-sm outline-none"
+              className="flex-1 border rounded-md px-3 py-2 text-sm outline-none bg-white"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
