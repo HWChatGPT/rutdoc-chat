@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+// RutDoc Chat v2 – Full Upgrade: ChatGPT-style UX with animation polish
+
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function RutDocChat() {
@@ -7,10 +11,10 @@ export default function RutDocChat() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "I'm RutDoc™ — ask me anything about scent, wind, or scrape setup.",
-    },
+      content: "I'm RutDoc™ — ask me anything about scent, wind, or scrape setup."
+    }
   ]);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -18,6 +22,7 @@ export default function RutDocChat() {
 
   const handleSend = async () => {
     if (!input.trim()) return;
+
     const userMessage = { role: 'user', content: input };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
@@ -27,79 +32,77 @@ export default function RutDocChat() {
       const res = await fetch('/api/rutdoc', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: updatedMessages }),
+        body: JSON.stringify({ messages: updatedMessages })
       });
 
       if (!res.ok) {
-        console.error('API error', res.statusText);
+        console.error('API error:', res.statusText);
         return;
       }
 
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: 'assistant', content: data.reply || 'No reply received.' }]);
+      setMessages([...updatedMessages, {
+        role: 'assistant',
+        content: data.reply || 'No reply received.'
+      }]);
     } catch (err) {
-      console.error('Request failed', err);
+      console.error('Request failed:', err);
     }
   };
 
   return (
-    <div>
+    <>
       {/* Toggle Bubble */}
       {!visible && (
-        <button
+        <div
+          className="fixed bottom-4 right-4 bg-black text-white px-4 py-2 rounded-xl shadow-lg cursor-pointer z-50 text-sm hover:bg-gray-800 transition"
           onClick={() => setVisible(true)}
-          className="fixed bottom-4 right-4 bg-black text-white px-4 py-2 rounded-full shadow-xl z-50 text-sm hover:bg-gray-800 transition"
         >
           RutDoc™ Chat — Ask Me Anything
-        </button>
+        </div>
       )}
 
-      {/* Chat Window */}
       <AnimatePresence>
         {visible && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.25 }}
-            className="fixed bottom-24 right-4 w-[360px] max-h-[500px] bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden border border-gray-200"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-24 right-4 w-full max-w-md h-[500px] bg-white rounded-xl shadow-xl flex flex-col z-50 border border-gray-300 overflow-hidden"
           >
-            <div className="bg-black text-white text-sm px-4 py-3 flex justify-between items-center">
-              <span>RutDoc™ Chat — Ask Me Anything</span>
-              <button onClick={() => setVisible(false)} className="text-white text-lg">&times;</button>
+            {/* Header */}
+            <div className="flex justify-between items-center px-4 py-2 border-b border-gray-200 bg-gray-50">
+              <span className="text-sm font-medium text-gray-700">RutDoc™ Chat — Ask Me Anything</span>
+              <button onClick={() => setVisible(false)} className="text-gray-500 hover:text-black text-sm">&times;</button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-4 py-2 space-y-3 text-sm">
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 text-sm">
               {messages.map((msg, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: msg.role === 'user' ? 50 : -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className={`rounded-xl px-4 py-2 max-w-[85%] whitespace-pre-wrap ${
-                    msg.role === 'user'
-                      ? 'bg-gray-200 text-black self-end ml-auto text-right'
-                      : 'bg-green-100 text-black self-start mr-auto text-left'
-                  }`}
-                >
+                <div key={i} className={`whitespace-pre-wrap px-4 py-2 rounded-lg max-w-[85%] ${
+                  msg.role === 'user'
+                    ? 'bg-gray-200 text-black self-end ml-auto'
+                    : 'bg-green-100 text-black self-start'
+                }`}>
                   {msg.content}
-                </motion.div>
+                </div>
               ))}
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="border-t border-gray-200 p-2 bg-white flex items-center">
+            {/* Input */}
+            <div className="border-t border-gray-200 px-3 py-2 flex">
               <input
-                type="text"
+                className="flex-1 border rounded-md px-3 py-2 text-sm focus:outline-none bg-white"
+                placeholder="Ask RutDoc anything..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Ask RutDoc anything..."
-                className="flex-1 rounded-full px-4 py-2 text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
               />
               <button
                 onClick={handleSend}
-                className="ml-2 bg-black text-white px-4 py-2 rounded-full text-sm hover:bg-gray-800 transition"
+                className="ml-2 px-4 py-2 bg-black text-white text-sm rounded-md hover:bg-gray-800"
               >
                 Send
               </button>
@@ -107,7 +110,6 @@ export default function RutDocChat() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }
-
