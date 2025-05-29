@@ -55,6 +55,7 @@ export default function RutDocChat() {
   </div>
 )}
 
+
       {visible && (
         <div className="fixed bottom-20 right-4 w-full max-w-md h-[500px] bg-white rounded-xl shadow-xl flex flex-col z-50 border border-gray-300">
           <div className="flex-1 grow overflow-y-auto p-4 space-y-3 text-sm">
