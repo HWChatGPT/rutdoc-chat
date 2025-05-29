@@ -1,21 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useRef, useEffect } from 'react';
 
 export default function RutDocChat() {
   const [visible, setVisible] = useState(false);
-  const [input, setInput] = useState('');
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
       content: "I'm RutDoc™ — ask me anything about scent, wind, or scrape setup.",
     },
   ]);
-
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  const [input, setInput] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -32,93 +26,88 @@ export default function RutDocChat() {
         body: JSON.stringify({ messages: updatedMessages }),
       });
 
-      if (!res.ok) {
-        throw new Error(`API error: ${res.statusText}`);
-      }
+      if (!res.ok) throw new Error('API error');
 
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: 'assistant', content: data.reply }]);
+      setMessages((prev) => [...prev, { role: 'assistant', content: data.reply || 'No reply received.' }]);
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: '⚠️ Request failed. Please try again.' },
-      ]);
+      console.error('Request failed:', err);
     }
   };
 
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
   return (
     <>
-      {/* Floating Trigger */}
       {!visible && (
-        <button
+        <div
+          className="fixed bottom-4 right-4 bg-black text-white px-4 py-2 rounded-xl shadow-lg cursor-pointer z-50 text-sm"
           onClick={() => setVisible(true)}
-          className="fixed bottom-4 right-4 bg-black text-white px-4 py-2 rounded-full text-sm shadow-lg z-50 flex items-center space-x-2"
         >
-          <img src="/rutdoc-avatar.png" alt="RutDoc Avatar" className="w-6 h-6 rounded-full" />
-          <span>RutDoc™ Chat — Ask Me Anything</span>
-        </button>
+          <img
+            src="/rutdoc-avatar.png"
+            alt="RutDoc Avatar"
+            className="inline-block w-6 h-6 mr-2 rounded-full border border-white align-middle"
+          />
+          RutDoc™ Chat — Ask Me Anything
+        </div>
       )}
 
-      {/* Chat Bubble */}
-      <AnimatePresence>
-        {visible && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 30 }}
-            className="fixed bottom-20 right-4 w-full max-w-md bg-white shadow-xl rounded-xl z-50 flex flex-col border border-gray-300 overflow-hidden"
-          >
-            {/* Header */}
-            <div className="flex items-center p-3 border-b border-gray-200 bg-gray-100">
-              <img src="/rutdoc-avatar.png" alt="RutDoc Avatar" className="w-8 h-8 rounded-full mr-2" />
-              <div className="text-sm font-semibold">RutDoc™ — Your AI Hunting Scientist</div>
-              <button onClick={() => setVisible(false)} className="ml-auto text-sm text-gray-500 hover:text-black">
-                ✕
-              </button>
-            </div>
+      {visible && (
+        <div className="fixed bottom-24 right-4 w-full max-w-md h-[500px] bg-white rounded-2xl shadow-xl flex flex-col z-50 border border-gray-200 overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center p-4 border-b border-gray-300">
+            <img
+              src="/rutdoc-avatar.png"
+              alt="RutDoc Avatar"
+              className="w-10 h-10 rounded-full mr-3 border border-black"
+            />
+            <div className="text-sm font-bold">RutDoc™ — Your AI Hunting Scientist</div>
+            <button onClick={() => setVisible(false)} className="ml-auto text-gray-400 hover:text-black text-lg">&times;</button>
+          </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 text-sm">
-              {messages.map((msg, i) => (
-                <div
-                  key={i}
-                  className={`px-4 py-2 rounded-lg whitespace-pre-wrap max-w-[85%] ${
-                    msg.role === 'user'
-                      ? 'bg-gray-200 text-black self-end text-right'
-                      : 'bg-gray-100 text-black self-start text-left'
-                  }`}
-                >
-                  {msg.content}
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* Input */}
-            <div className="border-t border-gray-200 p-2 flex items-center space-x-2 bg-white">
-              <input
-                type="text"
-                placeholder="Ask RutDoc™ anything..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                className="flex-1 px-3 py-2 text-sm border rounded-lg outline-none"
-              />
-              <button
-                onClick={handleSend}
-                className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-800"
+          {/* Message History */}
+          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 text-sm">
+            {messages.map((msg, i) => (
+              <div
+                key={i}
+                className={`rounded-lg px-4 py-2 whitespace-pre-wrap max-w-[85%] ${
+                  msg.role === 'user'
+                    ? 'bg-gray-200 text-black self-end text-right'
+                    : 'bg-green-100 text-black self-start text-left'
+                }`}
               >
-                Send
-              </button>
-            </div>
+                {msg.content}
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
 
-            {/* Disclaimer */}
-            <div className="text-[10px] text-gray-400 text-center p-1 pb-2 bg-white">
+          {/* Input */}
+          <div className="border-t border-gray-200 px-4 py-2 text-sm">
+            <input
+              className="w-full border rounded-md px-3 py-2 text-sm outline-none"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              placeholder="Ask RutDoc™ anything..."
+            />
+            <button
+              onClick={handleSend}
+              className="mt-2 w-full bg-black text-white py-2 rounded-md text-sm hover:bg-gray-800"
+            >
+              Send
+            </button>
+            <div className="mt-2 text-xs text-gray-400 text-center">
               RutDoc™ can make mistakes. Check important info.
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
     </>
   );
 }
