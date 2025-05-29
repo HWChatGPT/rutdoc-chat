@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function RutDocChat() {
@@ -6,11 +6,11 @@ export default function RutDocChat() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "I'm RutDoc™ — ask me anything about scent, wind, or scrape setup.",
-    },
+      content: "I'm RutDoc™ — ask me anything about scent, wind, or scrape setup."
+    }
   ]);
   const [input, setInput] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -18,6 +18,7 @@ export default function RutDocChat() {
 
   const handleSend = async () => {
     if (!input.trim()) return;
+
     const userMessage = { role: 'user', content: input };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
@@ -27,15 +28,15 @@ export default function RutDocChat() {
       const res = await fetch('/api/rutdoc', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: updatedMessages }),
+        body: JSON.stringify({ messages: updatedMessages })
       });
 
-      if (!res.ok) throw new Error(res.statusText);
+      if (!res.ok) throw new Error('API error');
 
       const data = await res.json();
-      setMessages([...updatedMessages, { role: 'assistant', content: data.reply || 'No reply received.' }]);
+      setMessages([...updatedMessages, { role: 'assistant', content: data.reply }]);
     } catch (err) {
-      console.error('Request failed:', err);
+      setMessages([...updatedMessages, { role: 'assistant', content: 'RutDoc couldn\'t respond. Try again.' }]);
     }
   };
 
@@ -51,42 +52,41 @@ export default function RutDocChat() {
       <AnimatePresence>
         {visible && (
           <motion.div
-            className="fixed bottom-24 right-4 w-full max-w-md h-[500px] bg-white rounded-xl shadow-xl flex flex-col z-50 border border-gray-300"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-4 right-4 w-[90vw] max-w-md h-[70vh] bg-white rounded-xl shadow-xl flex flex-col z-50 border border-gray-300"
           >
-            <div className="flex justify-between items-center px-4 py-2 border-b text-sm font-semibold">
-              <span>RutDoc™ Chat — Ask Me Anything</span>
-              <button onClick={() => setVisible(false)} className="text-gray-500 hover:text-black">
-                ✕
-              </button>
+            <div className="flex items-center justify-between px-4 py-2 bg-orange-500 text-white rounded-t-xl">
+              <span className="text-sm font-semibold">Your AI Hunting Scientist</span>
+              <button onClick={() => setVisible(false)} className="text-white font-bold text-lg">×</button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-4 space-y-3 text-sm">
+            <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 text-sm">
               {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div
-                    className={`rounded-lg px-4 py-2 max-w-[80%] whitespace-pre-wrap shadow text-sm leading-relaxed ${
-                      msg.role === 'user'
-                        ? 'bg-gray-200 text-black'
-                        : 'bg-green-100 text-black'
-                    }`}
-                  >
-                    {msg.content}
-                  </div>
+                <div
+                  key={i}
+                  className={`rounded-lg px-4 py-2 max-w-[85%] whitespace-pre-wrap ${
+                    msg.role === 'user'
+                      ? 'bg-gray-200 text-black self-end text-right ml-auto'
+                      : 'bg-green-100 text-black self-start text-left'
+                  }`}
+                >
+                  {msg.content}
                 </div>
               ))}
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="flex border-t border-gray-200 p-2">
+            <div className="border-t border-gray-200 px-4 py-2 flex">
               <input
+                autoFocus
                 className="flex-1 border rounded-md px-3 py-2 text-sm outline-none bg-white"
+                placeholder="Ask RutDoc anything..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Ask RutDoc anything..."
               />
               <button
                 onClick={handleSend}
