@@ -46,11 +46,15 @@ export default function RutDocChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  return (
-    <>
-      <div
-        className="fixed bottom-4 right-4 bg-black text-white px-4 py-2 rounded-xl shadow-lg cursor-pointer z-50"
-        onClick={() => setVisible(!visible)}
+  {!visible && (
+  <div
+    className="fixed bottom-4 right-4 bg-black text-white px-4 py-2 rounded-xl shadow-lg cursor-pointer z-50"
+    onClick={() => setVisible(true)}
+  >
+    RutDoc™ Chat — Ask Me Anything
+  </div>
+)}
+
       >
         RutDoc™ Chat — Ask Me Anything
       </div>
