@@ -2,6 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 
 export default function RutDocChat() {
   const [visible, setVisible] = useState(false);
+  useEffect(() => {
+  console.log("Chat visibility:", visible);
+}, [visible]);
+
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
